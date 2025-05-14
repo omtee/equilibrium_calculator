@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.optimize import curve_fit
 
 def equilibrium_equations_at_pH(
     unknowns: list[float],
@@ -55,3 +56,10 @@ def interpolate_constants_temp(temp: float) -> dict[str, float]:
         values = np.array(list(temp_values.values()))
         constants[key] = np.interp(temp, temps, values, left=0, right=200)
     return constants
+
+def power_law(x, a, b):
+    return a * x ** b
+
+def fit_power_law(x_data, y_data):
+    popt, _ = curve_fit(power_law, x_data, y_data)
+    return popt

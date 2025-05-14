@@ -2,9 +2,10 @@ import numpy as np
 from scipy.optimize import fsolve
 import streamlit as st
 
-from src.funcs import equilibrium_equations_at_pH, interpolate_constants_temp
+from src.funcs import equilibrium_equations_at_pH, fit_power_law, interpolate_constants_temp, power_law
 from src.plots import plot_equilibrium_results_plotly
 
+constant_c_fitting = fit_power_law(np.array([25, 100, 150]), np.array([2.0e9, 2.0e7, 2.0e6]))
 
 with st.sidebar:
     temperature = st.slider('Temperature, °C', min_value=25.0, max_value=150.0, value=125.0, step=5.0)
@@ -16,7 +17,12 @@ with st.sidebar:
     Ac_total_val = st.number_input('Total Ac, mol/l', min_value=0.0, max_value=10.0, value=0.4, format=concentration_format)
 
     # Interpolate constants based on temperature
-    constants = interpolate_constants_temp(temperature)
+    constants = {
+        'a': interpolate_constants_temp(temperature)['a'],
+        'b': interpolate_constants_temp(temperature)['b'],
+        'c': power_law(temperature, *constant_c_fitting),
+        'd': interpolate_constants_temp(temperature)['d'],
+    }
 
     with st.expander("Equilibrium Constants", expanded=True):
         # Set equilibrium constants (at a specific temperature)
