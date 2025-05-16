@@ -7,9 +7,9 @@ from src.plots import plot_equilibrium_results_plotly
 
 # initial fitting of constants
 constant_data['a'].fit_power()
-constant_data['b'].fit_linear()
+constant_data['b'].fit_constant()
 constant_data['c'].fit_power()
-constant_data['d'].fit_linear()
+constant_data['d'].fit_quadratic()
 
 with st.sidebar:
     temperature = st.slider('Temperature, °C', min_value=25.0, max_value=150.0, value=125.0, step=5.0)
@@ -78,7 +78,7 @@ with tab_constants:
     fig_b = go.Figure()
     fig_b.add_trace(go.Scatter(x=temp_range, y=b_vals, mode='lines', name='b (fit)'))
     fig_b.add_trace(go.Scatter(x=b_x, y=b_y, mode='markers', name='b (measured)', marker=dict(size=10, color='red')))
-    fig_b.update_layout(title='Constant b vs Temperature', xaxis_title='Temperature (°C)', yaxis_title='b', yaxis_type='log')
+    fig_b.update_layout(title='Constant b vs Temperature', xaxis_title='Temperature (°C)', yaxis_title='b', yaxis_type='linear')
     st.plotly_chart(fig_b, use_container_width=True)
 
     fig_c = go.Figure()
@@ -90,7 +90,7 @@ with tab_constants:
     fig_d = go.Figure()
     fig_d.add_trace(go.Scatter(x=temp_range, y=d_vals, mode='lines', name='d (fit)'))
     fig_d.add_trace(go.Scatter(x=d_x, y=d_y, mode='markers', name='d (measured)', marker=dict(size=10, color='red')))
-    fig_d.update_layout(title='Constant d vs Temperature', xaxis_title='Temperature (°C)', yaxis_title='d', yaxis_type='log')
+    fig_d.update_layout(title='Constant d vs Temperature', xaxis_title='Temperature (°C)', yaxis_title='d', yaxis_type='linear')
     st.plotly_chart(fig_d, use_container_width=True)
 
 # st.title(f'NH3-SO2-Ac-H2O system at {temperature:.0f} °C')
