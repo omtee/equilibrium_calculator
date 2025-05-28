@@ -65,6 +65,7 @@ def plot_equilibrium_results_plotly(results_array: np.ndarray, temp: float) -> N
         yaxis_range=[-2, 1],
         xaxis_tickmode="linear",
         xaxis_side="top",
+        xaxis_showgrid=True,
         showlegend=True,
         legend=dict(
             orientation="h",
