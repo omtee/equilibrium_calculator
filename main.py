@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from scipy.optimize import fsolve
 import streamlit as st
 
@@ -164,75 +165,72 @@ with tab_results:
     fig = plot_equilibrium_results_plotly(results_array, temperature)
     st.plotly_chart(fig, use_container_width=True)
 
-    st.write("## Component Concentrations at certain pH")
-    ph_col_1, ph_col_2 = st.columns(2)
-    pH_input_1 = ph_col_1.number_input(
-        "pH",
+    st.write("## pH Value Highlighting")
+    new_pH = st.number_input(
+        "Add a pH value",
         min_value=0.0,
         max_value=14.0,
-        value=5.0,
+        value=7.0,
         step=0.1,
-        format="%.1f",
-        key="pH_input_1",
+        format="%.2f",
+        key="highlight_pH",
     )
-    pH_input_2 = ph_col_2.number_input(
-        "pH",
-        min_value=0.0,
-        max_value=14.0,
-        value=8.0,
-        step=0.1,
-        format="%.1f",
-        key="pH_input_2",
-    )
-    # initial guess from results_array
-    initial_guess_1 = results_array[
-        np.abs(results_array[:, 0] - pH_input_1).argmin(), 1:8
-    ].tolist()  # Get the closest initial guess from results
-    solution_1, infodict_1, ier_1, mesg_1 = fsolve(
-        equilibrium_equations_at_pH,
-        initial_guess_1,
-        args=(pH_input_1, a, b, c, d, S_total_val, N_total_val, Ac_total_val),
-        xtol=1e-10,
-        full_output=True,
-    )
-    initial_guess_2 = results_array[
-        np.abs(results_array[:, 0] - pH_input_2).argmin(), 1:8
-    ].tolist()  # Get the closest initial guess from results
-    solution_2, infodict_2, ier_2, mesg_2 = fsolve(
-        equilibrium_equations_at_pH,
-        initial_guess_2,
-        args=(pH_input_2, a, b, c, d, S_total_val, N_total_val, Ac_total_val),
-        xtol=1e-10,
-        full_output=True,
-    )
+    # Data structure to store highlighted pH values and their results
+    if "highlighted_pH_results" not in st.session_state:
+        st.session_state["highlighted_pH_results"] = pd.DataFrame(
+            columns=[
+                "pH",
+                "SO\u2082==H\u2082O",
+                "HSO\u2083\u207b",
+                "SO\u2083\u00b2\u207b",
+                "NH\u2084\u207a",
+                "NH\u2083==H\u2082O",
+                "HAc",
+                "Ac\u207b",
+            ]
+        ).set_index("pH")
+        st.session_state["highlighted_pH_results"].index.name = "pH"
 
-    solution_dict = {}
-    if ier_1 == 1:
-        h2so3_eq, hso3_eq, so3_eq, nh3_h2o_eq, nh4_eq, hac_eq, ac_eq = solution_1
-        solution_dict[pH_input_1] = {
-            "SO\u2082==H\u2082O": h2so3_eq,
-            "HSO\u2083\u207b": hso3_eq,
-            "SO\u2083\u00b2\u207b": so3_eq,
-            "NH\u2084\u207a": nh4_eq,
-            "NH\u2083==H\u2082O": nh3_h2o_eq,
-            "HAc": hac_eq,
-            "Ac\u207b": ac_eq,
-        }
-    else:
-        st.write(f"Convergence failed for pH = {pH}: {mesg}")
+    add_ph = st.button("Add pH to Highlight")
+    if add_ph:
+        if new_pH not in st.session_state["highlighted_pH_results"].index:
+            # Use closest initial guess from results_array
+            initial_guess = results_array[
+                np.abs(results_array[:, 0] - new_pH).argmin(), 1:8
+            ].tolist()
+            solution, infodict, ier, mesg = fsolve(
+                equilibrium_equations_at_pH,
+                initial_guess,
+                args=(new_pH, a, b, c, d, S_total_val, N_total_val, Ac_total_val),
+                xtol=1e-10,
+                full_output=True,
+            )
+            if ier == 1:
+                h2so3_eq, hso3_eq, so3_eq, nh3_h2o_eq, nh4_eq, hac_eq, ac_eq = solution
+                new_row = pd.DataFrame(
+                    {
+                        "SO\u2082==H\u2082O": h2so3_eq,
+                        "HSO\u2083\u207b": hso3_eq,
+                        "SO\u2083\u00b2\u207b": so3_eq,
+                        "NH\u2084\u207a": nh4_eq,
+                        "NH\u2083==H\u2082O": nh3_h2o_eq,
+                        "HAc": hac_eq,
+                        "Ac\u207b": ac_eq,
+                    },
+                    index=[new_pH],
+                )
+                new_row.index.name = "pH"
+                st.session_state["highlighted_pH_results"] = pd.concat(
+                    [st.session_state["highlighted_pH_results"], new_row],
+                    join="inner",
+                ).sort_index()
+            else:
+                st.warning(f"Convergence failed for pH = {new_pH}: {mesg}")
 
-    if ier_2 == 1:
-        h2so3_eq, hso3_eq, so3_eq, nh3_h2o_eq, nh4_eq, hac_eq, ac_eq = solution_2
-        solution_dict[pH_input_2] = {
-            "SO\u2082==H\u2082O": h2so3_eq,
-            "HSO\u2083\u207b": hso3_eq,
-            "SO\u2083\u00b2\u207b": so3_eq,
-            "NH\u2084\u207a": nh4_eq,
-            "NH\u2083==H\u2082O": nh3_h2o_eq,
-            "HAc": hac_eq,
-            "Ac\u207b": ac_eq,
-        }
-    else:
-        st.write(f"Convergence failed for pH = {pH}: {mesg}")
-
-    st.dataframe(solution_dict)
+    if not st.session_state["highlighted_pH_results"].empty:
+        st.write("### Highlighted pH Values and Results")
+        st.data_editor(
+            st.session_state["highlighted_pH_results"],
+            num_rows="dynamic",
+            use_container_width=True,
+        )
