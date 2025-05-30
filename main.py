@@ -40,10 +40,10 @@ with st.sidebar:
     )
 
     # Interpolate constants based on temperature
-    constants = {
+    st.session_state["constants"] = {
         "a": constant_data["a"].constants_at_temp(temperature),
         "b": constant_data["b"].constants_at_temp(temperature),
-        "c": constant_data["c"].constants_at_temp(temperature),
+        "c": constant_data["c2"].constants_at_temp(temperature),
         "d": constant_data["d"].constants_at_temp(temperature),
     }
 
@@ -54,7 +54,7 @@ with st.sidebar:
             "SO2_H2O = HSO3",
             min_value=0.0,
             max_value=1.0e14,
-            value=constants["a"],
+            value=st.session_state["constants"]["a"],
             step=1e3,
             format=constant_format,
         )
@@ -62,21 +62,21 @@ with st.sidebar:
             "HSO3 = SO3",
             min_value=0.0,
             max_value=1.0e14,
-            value=constants["b"],
+            value=st.session_state["constants"]["b"],
             format=constant_format,
         )
         c = st.number_input(
             "NH4 = NH3_H2O",
             min_value=0.0,
             max_value=1.0e14,
-            value=constants["c"],
+            value=st.session_state["constants"]["c"],
             format=constant_format,
         )
         d = st.number_input(
             "HAc = Ac",
             min_value=0.0,
             max_value=1.0e14,
-            value=constants["d"],
+            value=st.session_state["constants"]["d"],
             format=constant_format,
         )
 
@@ -107,15 +107,20 @@ with tab_constants:
     )
     st.plotly_chart(fig_c, use_container_width=True)
 
+    fig_c2 = plot_constant(
+        temp_range,
+        constant_data["c2"],
+        yaxis_type="log",
+    )
+    st.plotly_chart(fig_c2, use_container_width=True)
+
     fig_d = plot_constant(
         temp_range,
         constant_data["d"],
     )
     st.plotly_chart(fig_d, use_container_width=True)
 
-# st.title(f'NH3-SO2-Ac-H2O system at {temperature:.0f} °C')
 pH_values: np.ndarray = np.linspace(14, 0, 500)  # Generate pH values
-
 results: list[list[float]] = []
 initial_guess_1: list[float] = [
     1e-6,  # SO2_H2O

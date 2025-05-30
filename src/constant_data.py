@@ -1,7 +1,7 @@
 from typing import Dict
 
 from src.EquilibriumConstant import EquilibriumConstant
-from src.funcs import power_law, constant, quadratic
+from src.funcs import power_law, constant, quadratic, van_t_hoff
 
 
 constant_data: Dict[str, EquilibriumConstant] = {
@@ -27,13 +27,23 @@ constant_data: Dict[str, EquilibriumConstant] = {
     ),
     "c": EquilibriumConstant(
         name="c",
-        equation="NH4 = NH3_H2O",
+        equation="NH4 = NH3_H2O (power)",
         data={
             25: 2.0e9,
             100: 2.0e7,
             150: 2.0e6,
         },
         fit_func=power_law,
+    ),
+    "c2": EquilibriumConstant(
+        name="c2",
+        equation="NH4 = NH3_H2O (van 't Hoff)",
+        data={
+            25: 2.0e9,
+            100: 2.0e7,
+            150: 2.0e6,
+        },
+        fit_func=van_t_hoff,
     ),
     "d": EquilibriumConstant(
         name="d",

@@ -52,3 +52,35 @@ def reciprocal(x: float, a: float, b: float) -> float:
 
 def constant(x: float, a: float) -> np.ndarray:
     return a * np.ones_like(x)
+
+
+def van_t_hoff(T_celsius: float, delta_H: float, delta_S: float) -> float:
+    """
+    Calculates the natural logarithm of the 'c' constant using a form
+    derived from the van 't Hoff equation for the temperature dependence of Ka.
+
+    Parameters:
+    T_celsius (float): Temperature in Celsius.
+    delta_H (float): Standard enthalpy change of the reaction (J/mol).
+                     This corresponds to the reaction NH4+ + H2O <=> NH3 + H3O+.
+    delta_S (float): Standard entropy change of the reaction (J/(mol*K)).
+                     This corresponds to the reaction NH4+ + H2O <=> NH3 + H3O+.
+
+    Returns:
+    float: The natural logarithm of the 'c' constant at temperature T_celsius.
+    """
+    # Universal gas constant
+    R = 8.314  # J/(mol*K)
+
+    # Convert temperature to Kelvin and calculate inverse
+    T_kelvin = T_celsius + 273.15
+    inv_T = 1 / T_kelvin
+
+    # Van't Hoff equation for ln(Ka): ln(Ka) = - (delta_H / R) * (1/T) + (delta_S / R)
+    # Since c = 1/Ka, then ln(c) = -ln(Ka)
+    # So, ln(c) = (delta_H / R) * (1/T) - (delta_S / R)
+
+    # Calculate ln(c) based on the derived Van't Hoff form
+    ln_c_val = (delta_H / R) * inv_T - (delta_S / R)
+
+    return ln_c_val
