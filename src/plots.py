@@ -186,13 +186,20 @@ def plot_constant(
     const_data: EquilibriumConstant,
     yaxis_type: Literal["linear", "log"] = "linear",
 ):
-    fit_vals = [const_data.constants_at_temp(t) for t in temp_range]
+    fit_vals = const_data.constants_at_temp(temp_range)
     x = list(const_data.x_data)
     y = list(const_data.y_data)
     eqn = const_data.equation
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=temp_range, y=fit_vals, mode="lines", name="fit"))
+    fig.add_trace(
+        go.Scatter(
+            x=temp_range,
+            y=fit_vals,
+            mode="lines",
+            name=f"fit ({const_data._fit_func.__name__})",
+        )
+    )
     fig.add_trace(
         go.Scatter(
             x=x,
