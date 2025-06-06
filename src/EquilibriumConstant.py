@@ -3,7 +3,7 @@ from typing import Callable, Dict
 import numpy as np
 from scipy.optimize import curve_fit
 
-from src.funcs import van_t_hoff
+from funcs import van_t_hoff
 
 
 class EquilibriumConstant:

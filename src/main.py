@@ -3,9 +3,9 @@ import pandas as pd
 from scipy.optimize import fsolve
 import streamlit as st
 
-from src.constant_data import constant_data
-from src.funcs import equilibrium_equations_at_pH
-from src.plots import plot_constant, plot_equilibrium_results_plotly
+from constant_data import constant_data
+from funcs import equilibrium_equations_at_pH
+from plots import plot_constant, plot_equilibrium_results_plotly
 
 temp_min = 25.0
 temp_max = 175.0

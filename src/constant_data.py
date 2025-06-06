@@ -1,7 +1,7 @@
 from typing import Dict
 
-from src.EquilibriumConstant import EquilibriumConstant
-from src.funcs import power_law, constant, quadratic, van_t_hoff
+from EquilibriumConstant import EquilibriumConstant
+from funcs import power_law, constant, quadratic, van_t_hoff
 
 
 constant_data: Dict[str, EquilibriumConstant] = {
