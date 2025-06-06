@@ -3,6 +3,9 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 # Install the project into `/app`
 WORKDIR /app
 
+# Install system dependencies
+ENV DOCKER_BUILDKIT=1
+
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
 
