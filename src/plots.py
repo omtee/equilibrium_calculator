@@ -1,77 +1,8 @@
 from typing import Literal
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
 import plotly.graph_objects as go
 
-from src.EquilibriumConstant import EquilibriumConstant
-
-
-def plot_equilibrium_results_plt(results_array: np.ndarray) -> plt.Figure:
-    pH_values = results_array[:, 0]
-    filtered_results = results_array[:, 1:]  # Exclude the pH column for filtering
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(
-        pH_values,
-        filtered_results[:, 0],
-        label="$SO_2$==$H_2O$",
-        color="red",
-        linestyle="-",
-    )
-    plt.plot(
-        pH_values,
-        filtered_results[:, 1],
-        label="$HSO_3^-$",
-        color="red",
-        linestyle="-.",
-    )
-    plt.plot(
-        pH_values,
-        filtered_results[:, 2],
-        label="$SO_3^{-2}$",
-        color="red",
-        linestyle="--",
-    )
-    plt.plot(
-        pH_values, filtered_results[:, 3], label="$NH_4^+$", color="blue", linestyle="-"
-    )
-    plt.plot(
-        pH_values,
-        filtered_results[:, 4],
-        label="$NH_3$==$H_2O$",
-        color="blue",
-        linestyle="--",
-    )
-    plt.plot(
-        pH_values, filtered_results[:, 5], label="$HAc$", color="green", linestyle="-"
-    )
-    plt.plot(
-        pH_values, filtered_results[:, 6], label="$Ac^-$", color="green", linestyle="--"
-    )
-
-    plt.xlabel("pH")
-    plt.ylabel("mol/l")
-    plt.yscale("log")
-    plt.ylim(0.01, 10)
-    plt.yticks([0.01, 0.1, 1, 10])
-    plt.xlim(min(pH_values), max(pH_values))
-    plt.xticks(
-        np.arange(min(pH_values), max(pH_values) + 1, 1)
-    )  # Set x-axis tick interval to 1 pH
-    plt.gca().yaxis.set_major_formatter(
-        FormatStrFormatter("%.2f")
-    )  # Format y-axis with decimals
-    plt.legend(
-        loc="upper center", bbox_to_anchor=(0.5, -0.02), ncol=7
-    )  # Legend at the bottom
-
-    # Add x-axis at the top
-    ax = plt.gca()
-    ax.xaxis.set_label_position("top")
-    ax.xaxis.tick_top()
-
-    return plt
+from EquilibriumConstant import EquilibriumConstant
 
 
 def plot_equilibrium_results_plotly(results_array: np.ndarray, temp: float) -> None:
@@ -165,6 +96,9 @@ def plot_equilibrium_results_plotly(results_array: np.ndarray, temp: float) -> N
         xaxis_tickmode="linear",
         xaxis_side="top",
         xaxis_showgrid=True,
+        xaxis_showspikes=True,
+        xaxis_spikemode="across",
+        yaxis_showspikes=False,
         showlegend=True,
         legend=dict(
             orientation="h",
@@ -173,7 +107,7 @@ def plot_equilibrium_results_plotly(results_array: np.ndarray, temp: float) -> N
             xanchor="center",
             x=0.5,
         ),
-        hovermode="x unified",
+        hovermode=None,
         height=600,
         width=800,
     )
