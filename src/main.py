@@ -7,6 +7,8 @@ from constant_data import constant_data
 from funcs import equilibrium_equations_at_pH
 from plots import plot_constant, plot_equilibrium_results_plotly
 
+st.set_page_config(page_title="SiCalc")
+
 temp_min = 25.0
 temp_max = 175.0
 
